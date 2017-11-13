@@ -1,20 +1,43 @@
  package com.example.admin.wxaddfrienddemo;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
  public class MainActivity extends AppCompatActivity {
 
      private static final String TAG = "xyz";
+
 
      @Override
      protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +58,9 @@ import java.util.List;
 //        });
     }
 
-     // 是否安装了微信
+
+
+    //  是否安装了微信
      private boolean isWxAviliable() {
         PackageManager pm = getPackageManager();
         List<PackageInfo> list = pm.getInstalledPackages(0);
@@ -56,9 +81,9 @@ import java.util.List;
 //         intent.addCategory(Intent.CATEGORY_LAUNCHER);
 //         ComponentName cn = new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
 //         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//         Bundle bundle = new Bundle();
 //         intent.setComponent(cn);
 //         startActivity(intent);
+
 
 
          // ei表示插入的bundle是int类型，es表示是String，注意加上""（这里用转义字符）， ez表示boolean类型
@@ -81,17 +106,18 @@ import java.util.List;
 //                     "--es Contact_Nick \"明\" "+  // 微信昵称 ,可以改动，去掉显示微信号了
                      // 只要有这个v1就可以了，去掉就不行了
                      "--es Contact_User \"v1_f2beaa1797ef0252d0421242b04ab14613f59c18c49bab2e395fc26badaf517a@stranger\" "+   // v1 值
+
 //                     "--ei Contact_VUser_Info_Flag 0 "+   // 都为0，可去掉
 //                     "--ei Contact_Sex 1 "+    //  性别，0为女 1为男。设置错误或者去掉的话，性别就没有显示出来了
 //                     "--es Contact_Alias \"lyming1965\" "+  // 微信号
-//                     "--ei Contact_Scene 15 "  +// 微信号搜索的为3，手机号搜索为15
+                     "--ei Contact_Scene 15 "  +// 微信号搜索的为3，手机号搜索为15
 //                     "--ez Contact_NeedShowChangeSnsPreButton false "  + // 都是false，可以去掉
 
 //                     "Contact_Search_Mobile  \"13430013863\" "+     // 通过手机搜索的方式，多这个参数
                      "";
 
              // 通过手机号搜索的形式，多了这个字段 Contact_Search_Mobile=13430013863; 然后就是Contact_Scene 为15 ，其他都一样
-//             Runtime.getRuntime().exec(s);
+           //  Runtime.getRuntime().exec(s);
 
 
              // 现在通过群跳转到加人的界面，有两种，第一种是直接在聊天界面点击头像的情况，
@@ -106,15 +132,14 @@ import java.util.List;
 //                     "--ez Is_RoomOwner false "+                 // 全为false 一开始猜测是否是群主，但是结果不是。
 //                     "--es Contact_RoomNickname  \"吃瓜的鸿\" "+        // 群昵称,可修改，去掉不显示
                      "--es Contact_User \"wxid_n24mdcaqj37s22\" "+  // 微信id，只给这个就可以跳到加人界面了
-//                     "--ei Contact_Scene 14 "  +// 微信号搜索的为3，手机号搜索为15,群的方式是14
+                     "--ei Contact_Scene 15 "  +// 微信号搜索的为3，手机号搜索为15,群的方式是14
 //                     "--ez Contact_NeedShowChangeSnsPreButton false "  + // 都是false，可以去掉
-
                      // 第二种是点击右上角显示群信息后再点击群员到加人的界面，多了如下三个字段
-                     "--es Contact_ChatRoomId \"636235605@chatroom\" "+
-                     "--es Contact_Nick \"Hong\" "+    // 昵称
-                     "--ez Contact_RoomMember true "+   // 全为true
+//                     "--es Contact_ChatRoomId \"636235605@chatroom\" "+
+//                     "--es Contact_Nick \"Hong\" "+    // 昵称
+//                     "--ez Contact_RoomMember true "+   // 全为true
                      "";
-//            Runtime.getRuntime().exec(s1);
+             Runtime.getRuntime().exec(s1);
 
             // 通讯录方式
              //I/set     ( 2625): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false,
@@ -136,7 +161,7 @@ import java.util.List;
 
 
                      "";
-             Runtime.getRuntime().exec(s2);
+          //   Runtime.getRuntime().exec(s2);
 
          } catch (IOException e) {
              e.printStackTrace();

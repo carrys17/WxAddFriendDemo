@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <TextView
+        android:id="@+id/tv_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
+        android:hint="选择文件的目录" />
+
+    <Button
+        android:id="@+id/select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_hint"
+        android:layout_alignStart="@+id/tv_hint"
+        android:layout_below="@+id/tv_hint"
+        android:text="选择" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/tv_hint"
+        android:layout_alignLeft="@+id/select"
+        android:layout_alignRight="@+id/tv_hint"
+        android:layout_alignStart="@+id/select"
+        android:layout_below="@+id/select"
+        android:layout_marginTop="14dp"
+        android:text="请输入你需要的场景模式： 群14；微信号3、手机号15；通讯录 13"
+        android:id="@+id/textView" />
+
+
+    <EditText
+        android:id="@+id/et_scene"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_alignLeft="@+id/textView"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignStart="@+id/textView"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="13dp"
+        android:hint="场景模式" />
+
+    <EditText
+        android:id="@+id/et_hello"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/et_scene"
+        android:layout_alignLeft="@+id/et_scene"
+        android:layout_alignRight="@+id/et_scene"
+        android:layout_alignStart="@+id/et_scene"
+        android:layout_below="@+id/et_scene"
+        android:layout_marginTop="16dp"
+        android:hint="发送的验证信息" />
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sum"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:text="start" />
+
+    <EditText
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/et_hello"
+        android:layout_alignLeft="@+id/et_hello"
+        android:layout_alignRight="@+id/et_hello"
+        android:layout_alignStart="@+id/et_hello"
+        android:layout_below="@+id/et_hello"
+        android:layout_marginTop="22dp"
+        android:inputType="number"
+        android:hint="设置添加时间间隔，默认为10（单位为s）" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/time"
+        android:layout_alignStart="@+id/time"
+        android:layout_below="@+id/time"
+        android:layout_marginTop="18dp"
+        android:text="已经添加的人数: "
+        android:id="@+id/textView5" />
+
+    <TextView
+        android:id="@+id/sum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView5"
+        android:layout_alignBottom="@+id/textView5"
+        android:layout_alignLeft="@+id/start"
+        android:layout_alignStart="@+id/start"
+        android:text="0" />
+
+
+</RelativeLayout>
