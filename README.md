@@ -19,6 +19,7 @@
 
 1、直接在聊天界面中点击别人的头像的方式
 
+
 2、点击右上角的群信息再点击具体的人添加
 
 三、手机通讯录，也就是在微信中点击添加手机通讯录的方式
@@ -49,5 +50,17 @@ I/set     ( 2625): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Co
 三、通讯录方式
 I/set     ( 2625): intent = Intent { cmp=com.tencent.mm/.plugin.profile.ui.ContactInfoUI (has extras) }
 I/set     ( 2625): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_Mobile_MD5=270bae1b55a890759987f9047b81c027, Contact_RegionCode=CN_Guangdong_Dongguan, Contact_ShowUserName=false, Contact_Signature= boeey, Contact_Nick=桌球, Contact_User=v1_f2beaa1797ef0252d0421242b04ab14613f59c18c49bab2e395fc26badaf517a@stranger, Contact_Sex=1, Contact_Alias=, Contact_Scene=13, Contact_NeedShowChangeSnsPreButton=false}]
+
+
+2.0
+
+通过前面总结的规律，实现自动添加好友的效果。
+
+在ui布局中，要求可以选择一个txt文本。里面有要添加的微信id的值。每行一个，实现自动遍历该文本中的微信id，添加相应的好友。
+
+界面可以选择用户想要的添加场景，每次添加的时间间隔，用户想要填入的验证信息，当前添加的人数。
+
+具体逻辑看代码，注释很清楚了。
+
 
 
