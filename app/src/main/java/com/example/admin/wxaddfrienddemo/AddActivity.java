@@ -36,9 +36,12 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -78,6 +81,8 @@ public class AddActivity extends AppCompatActivity {
 
     String wxid;
 
+    StringBuilder saveString = new StringBuilder();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,11 +95,18 @@ public class AddActivity extends AppCompatActivity {
         etTime = findViewById(R.id.time);
         tvSum = findViewById(R.id.sum);
 
-        handler = new Handler(){
+        handler = new Handler(){ // 更新已添加的总数
             @Override
             public void handleMessage(Message msg) {
-                if (msg.what == 666){
-                    tvSum.setText(""+sum);
+                switch (msg.what){
+                    case 666:
+                        tvSum.setText(""+sum);
+                        break;
+                    case 111:
+                        Log.i("xyz","接受到111");
+                        // 在主线程中弹吐司，虽然子线程可以吐司，但是有时显示不出来，被微信自己的覆盖了
+                        showToast();
+                        break;
                 }
             }
         };
@@ -110,7 +122,7 @@ public class AddActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                new Thread(new Runnable() {
+                new Thread(new Runnable() { // 开启子线程是为了线程间的通信和同步操作
 
                     @Override
                     public void run() {
@@ -123,6 +135,8 @@ public class AddActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void startJump() {
@@ -139,45 +153,145 @@ public class AddActivity extends AppCompatActivity {
             num = list.size();
             for (String info : list) {
                 wxid = info;
-                SystemClock.sleep(time);
+                setCnt(0);
                 // 跳转到加人界面
                 AddUtils.addFriend(info, scene);
-
+                //showToast();
                 // 线程睡眠，让出cpu
                 waitfor(20000);
                 // 是否跳转成功，点击添加到通讯录按钮
                 if(getCnt() >= 1){
                     setCnt(0);
+                    if (!hasAddBtn()){ // 没有添加按钮，说明已经是好友了,直接返回
+                        Log.i("xyz","没有添加按钮，说明已经是好友了");
+                        finishAndReturn();
+                    }
                     // 点击添加按钮
                     clickAddButton();
-
+                    // 显示尝试添加的吐司
+//                     showToast();
+                    sendToUI();
+                    try {
+                        // 输出log到本地
+                        writeToLocal();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                   // showTextToast("尝试添加 "+wxid);
                     // 是否跳转成功,填入验证信息，点击发送按钮
                     waitfor(20000);
-                    if (getCnt()>= 2){
+                    if (getCnt()>= 1){
                         setCnt(0);
                         // 判断是否需要验证
                         if (isNeedVerify()){
                             // 设置验证信息并发送
                             sendMessage();
-
                             // 更新添加个数
                             refrensh();
-//                            waitfor(20000);
-//                            if (getCnt()==3){
-//                                // 是否发送成功，点击左上角返回
-//                                finishAndReturn();
-//                                SystemClock.sleep(500);
-//                                // 返回到主界面
-//                                finishAndReturn();
-//                            }
-//                        }else {
-//                            finishAndReturn();
+                            waitfor(20000);
+                            if (getCnt()>=1){
+                                // 是否发送成功，点击左上角返回
+                                finishAndReturn();
+                                SystemClock.sleep(time);
+                            }
+                        }else {
+                            finishAndReturn();
+                            SystemClock.sleep(time);
                         }
                     }
                 }
-                setCnt(0);
             }
         }
+    }
+
+    private void sendToUI() {
+        Message message = new Message();
+        message.what = 111;
+        Log.i("xyz","发送111给主线程");
+        handler.sendMessage(message);
+    }
+
+    private void writeToLocal() throws IOException {
+        //  路径名
+        File file = new File("/sdcard/tmp/");
+        if (!file.exists()){
+            file.mkdirs();  // 创建目录
+        }
+        // 具体文件名 , 路径 + 文件
+        File localFile = new File(file,"log.txt");
+        if (!localFile.exists()){
+            localFile.createNewFile();
+        }
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss ");
+        Date curDate = new Date(System.currentTimeMillis());
+        String date = format.format(curDate);
+        saveString.append(date +": 尝试添加 "+wxid+"\n");
+        Log.i("xyz",saveString.toString());
+
+        FileOutputStream fos = new FileOutputStream(localFile,false); // 这里的第二个参数代表追加还是覆盖，true为追加，false为覆盖
+        fos.write(saveString.toString().getBytes());
+        fos.close();
+
+    }
+
+    private void showToast() {
+        Log.i("xyz","调用了toast");
+        Toast.makeText(getApplicationContext(),"尝试添加"+wxid,Toast.LENGTH_SHORT).show();
+
+    }
+
+    //设置Toast对象
+    private Toast mToast = null;
+    private void showTextToast(String msg) {
+        //判断队列中是否包含已经显示的Toast
+        if (mToast == null) {
+            mToast = Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG);
+        }else{
+            mToast.setText(msg);
+        }
+        mToast.show();
+    }
+
+    private boolean hasAddBtn() {
+        AccessibilityNodeInfo root = getRoot();
+        // 获取到添加按钮
+        // List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ahp");
+        List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByText("添加");
+        if (list.size() > 0){
+            Log.i("xyz","找到添加按钮");
+           return true;
+        }
+        return false;
+    }
+
+    private AccessibilityNodeInfo findReturn(AccessibilityNodeInfo root) {
+        if (root == null){
+            return null;
+        }
+        AccessibilityNodeInfo res = null;
+        for (int i = 0; i < root.getChildCount(); i++) {
+            AccessibilityNodeInfo nodeInfo = root.getChild(i);
+            if (nodeInfo.getClassName().equals("android.widget.ImageView")) {
+                Log.i("xyz","获取到ImageView");
+                Log.i("xyz","nodeInfo = "+nodeInfo);
+                Rect rect = new Rect();
+                nodeInfo.getBoundsInScreen(rect);
+                int x = rect.centerX();
+                int y = rect.centerY();
+                if (0 < x && x < 35 && 15 < y && y < 50) {
+                    res =  nodeInfo;
+                    Log.i("xyz","找到返回键");
+                    break; // 这里必须有这个break，表示找到返回键之后就会打破循环，将找到的值返回
+                }
+            }else {
+                res = findReturn(nodeInfo);
+                if (res != null){
+                    return res;
+                }
+            }
+        }
+        return res;
     }
 
     private void refrensh() {
@@ -188,23 +302,27 @@ public class AddActivity extends AppCompatActivity {
         handler.sendMessage(message);
 
         // 是否添加成功
-        if (isNeedVerify()){
-            Log.i("xyz","添加失败");
-            failNum++;
-            Toast.makeText(AddActivity.this,"添加"+ wxid  +"失败,当前总个数"+sum+"/"+num+"其中成功个数为： "+successNum+
-                    " 失败个数为： "+failNum,Toast.LENGTH_SHORT).show();
-        }else {
-            Log.i("xyz","添加成功");
-            successNum++;
-            Toast.makeText(AddActivity.this,"添加"+ wxid  +"成功,当前总个数"+sum+"/"+num+"其中成功个数为： "+successNum+
-                    " 失败个数为： "+failNum,Toast.LENGTH_SHORT).show();
-        }
-
+//        if (isNeedVerify()){
+//            Log.i("xyz","添加失败");
+//            failNum++;
+//            Log.i("xyz","添加"+ wxid  +"失败,当前总个数"+sum+"/"+num+"其中成功个数为： "+successNum+
+//                    " 失败个数为： "+failNum);
+//            Toast.makeText(getApplication(),"添加"+ wxid  +"失败,当前总个数"+sum+"/"+num+"其中成功个数为： "+successNum+
+//                    " 失败个数为： "+failNum,Toast.LENGTH_LONG).show();
+//        }else {
+//            Log.i("xyz","添加成功");
+//            successNum++;
+//            Log.i("xyz","添加"+ wxid  +"成功,当前总个数"+sum+"/"+num+"其中成功个数为： "+successNum+
+//                    " 失败个数为： "+failNum);
+//            Toast.makeText(getApplicationContext(),"添加"+ wxid  +"成功,当前总个数"+sum+"/"+num+"其中成功个数为： "+successNum+
+//                    " 失败个数为： "+failNum,Toast.LENGTH_LONG).show();
+//        }
+        SystemClock.sleep(1000);
     }
 
     private boolean isNeedVerify() {
         AccessibilityNodeInfo rootInfo = getRoot();
-        List<AccessibilityNodeInfo> list =  rootInfo.findAccessibilityNodeInfosByText("验证申请");
+        List<AccessibilityNodeInfo> list =  rootInfo.findAccessibilityNodeInfosByText("验证");
         if (list.size()<=0){
             return false;
         }else {
@@ -244,20 +362,28 @@ public class AddActivity extends AppCompatActivity {
             Log.i("xyz","set cnt = "+ MyService.cnt);
         }
     }
-
+    AccessibilityNodeInfo returnInfo;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void finishAndReturn() {
+
+        Log.i("xyz","开始查找返回键");
        // 找到左上角的返回键
         AccessibilityNodeInfo root = getRoot();
-        List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/hg");
-        for (AccessibilityNodeInfo info : list){
-            while (!info.isClickable()) {
-                info = info.getParent();
+
+        returnInfo = findReturn(root);
+
+        if (returnInfo == null){
+            Log.i("xyz","找到的返回为null");
+        }else {
+            Log.i("xyz","找到的返回不为null");
+            while (!returnInfo.isClickable()) {
+                returnInfo = returnInfo.getParent();
             }
             // 点击返回
-            info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            break;
+            returnInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
         }
+
+
     }
 
 
@@ -268,7 +394,7 @@ public class AddActivity extends AppCompatActivity {
         AccessibilityNodeInfo root;
         do {
             root = mService.getRootInActiveWindow();
-            SystemClock.sleep(1000);
+            SystemClock.sleep(200);
         }while (root==null);
         return root;
     }
@@ -282,13 +408,18 @@ public class AddActivity extends AppCompatActivity {
        // printfAll(root);
         // 找到输入框
         edit = findEditText(root);
-        if (edit == null){
-            Log.i("xyz","edit为空");
-        }else {
-            Log.i("xyz","edit不为空");
-        }
+//        if (edit == null){
+//            Log.i("xyz","edit为空");
+//        }else {
+//            Log.i("xyz","edit不为空");
+//        }
         // 清除原本信息
-        ClearAllText(edit);
+
+
+
+        if (!TextUtils.isEmpty(edit.getText())){ // 如果不为空。清理
+            ClearAllText(edit);
+        }
         // 设置验证信息
         ClipboardManager manager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         String text = hello;
@@ -305,6 +436,8 @@ public class AddActivity extends AppCompatActivity {
             info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
         }
 
+
+
     }
 
     // 找到验证输入框
@@ -312,26 +445,29 @@ public class AddActivity extends AppCompatActivity {
         if (root == null){
             return null;
         }
-        AccessibilityNodeInfo edit = null;
+        AccessibilityNodeInfo res = null;
 
         for (int i = 0; i < root.getChildCount(); i++) {
             AccessibilityNodeInfo nodeInfo = root.getChild(i);
-            Log.i("xyz","class name = "+nodeInfo.getClassName());
-            if (nodeInfo.getClassName().toString().contains("EditText")) {
+            if (nodeInfo.getClassName().equals("android.widget.EditText")) {
                 Log.i("xyz","获取到editteXt");
                 Log.i("xyz","nodeInfo = "+nodeInfo);
-//                Rect rect = new Rect();
-//                nodeInfo.getBoundsInScreen(rect);
-//                int x = rect.centerX();
-//                int y = rect.centerY();
-//                if (9 < x && x < 371 && 80 < y && y < 108) {
-                return nodeInfo;
-//                }
+                Rect rect = new Rect();
+                nodeInfo.getBoundsInScreen(rect);
+                int x = rect.centerX();
+                int y = rect.centerY();
+                if (9 < x && x < 371 && 80 < y && y < 108) {
+                    res =  nodeInfo;
+                    break; // 这里必须有这个break，表示找到输入框之后就会打破循环，将找到的值返回
+                }
             }else {
-                findEditText(nodeInfo);
+                res = findEditText(nodeInfo);
+                if (res != null){
+                    return res;
+                }
             }
         }
-       return null;
+        return res;
     }
 
     private void printfAll(AccessibilityNodeInfo root){
@@ -346,17 +482,16 @@ public class AddActivity extends AppCompatActivity {
     private void ClearAllText(AccessibilityNodeInfo info) {
         // 每次只能删除一个字符
         String adb = "adb shell input keyevent 67";
+
         int length = info.getText().length();
         Log.i("xyz","原先文本长度 "+ length);
-        if (length > 0){
-            for (int i = 0; i < length; i++) {
-                try {
-                    Runtime.getRuntime().exec(adb);
-                    Log.i("xyz","执行一次");
-                    SystemClock.sleep(500); // 睡眠是为了保证能够全部清除
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        for (int i = 0; i < length; i++) {
+            try {
+                Runtime.getRuntime().exec(adb);
+                Log.i("xyz","执行一次");
+                SystemClock.sleep(500); // 睡眠是为了保证能够全部清除
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -367,13 +502,14 @@ public class AddActivity extends AppCompatActivity {
 
         AccessibilityNodeInfo root = getRoot();
         // 获取到添加按钮
-        //List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ahp");
-        List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByText("添加到通讯录");
-
+        // List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ahp");
+        List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByText("添加");
         if (list.size() > 0){
+            Log.i("xyz","找到添加按钮");
             for (AccessibilityNodeInfo info : list){
                 // 点击按钮
                 info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                break;
             }
         }
     }

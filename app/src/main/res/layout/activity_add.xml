@@ -36,7 +36,7 @@
         android:layout_alignStart="@+id/select"
         android:layout_below="@+id/select"
         android:layout_marginTop="14dp"
-        android:text="请输入你需要的场景模式： 群14；微信号3、手机号15；通讯录 13"
+        android:text="请输入你需要的场景模式： 群里非好友14；微信号3、手机号15、QQ号12；通讯录 13；扫一扫 30；名片 17"
         android:id="@+id/textView" />
 
 
