@@ -42,6 +42,7 @@ I/set     ( 2625): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Co
 二、群里非好友时
 
 直接在聊天界面点击头像
+
 I/set     ( 2625): intent = Intent { cmp=com.tencent.mm/.plugin.profile.ui.ContactInfoUI (has extras) }
 I/set     ( 2625): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, room_name=636235605@chatroom, Is_RoomOwner=false, Contact_RoomNickname=吃瓜的鸿, Contact_User=wxid_n24mdcaqj37s22, Contact_Scene=14, Contact_NeedShowChangeSnsPreButton=false}]
 
@@ -88,5 +89,17 @@ I/set     ( 2625): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Co
 最后就是吐司的问题了，因为前面提到，activity中的操作都是在子线程执行的，所以在吐司时就是在子线程，然后这里的子线程的吐司有很大的几率被微信自己的覆盖了，所以吐司时通过handler来实现在主线程操作，这样吐司才能正常显示。
 
 其他的就是一些小问题了，现在的代码在本地测试是没问题的，但是如果cpu占用高的情况下，就会出现一些奇怪的问题，所以还需要再次改进。
+
+4.0 
+
+添加时自动跳转界面的调整。
+
+之前的如果cpu占用高或者网速不好的话，可能获取不到控件，所以现在是利用 do  while的方式来不断的获取，当然也有一个超时限制，然后在每个操作之间的间隔调高，增加稳定性，加快删除原本的验证信息的速率。这样的稳定性就非常好了。
+然后还有考虑到特殊情况的处理，比如对方设置了某种场景你不能添加到他的时候，此时就应该点击确定后再点击返回到主界面。
+
+
+今天最后的版本就是在ui界面中添加了一个可以设置添加时bundle参数填入的多少选择，有三种情况，后面的两种有三种场景可用，第一种情况没有限制。
+
+每次操作间的时间间隔也来了个随机生成的，在1500到2000毫秒之间。
 
 
