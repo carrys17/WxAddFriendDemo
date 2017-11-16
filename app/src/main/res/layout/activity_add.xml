@@ -68,9 +68,9 @@
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/sum"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="26dp"
+        android:layout_marginBottom="17dp"
         android:text="start" />
 
     <EditText
@@ -87,14 +87,14 @@
         android:hint="设置添加时间间隔，默认为10（单位为s）" />
 
     <TextView
+        android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/time"
-        android:layout_alignStart="@+id/time"
-        android:layout_below="@+id/time"
-        android:layout_marginTop="18dp"
-        android:text="已经添加的人数: "
-        android:id="@+id/textView5" />
+        android:layout_alignLeft="@+id/bundle"
+        android:layout_alignStart="@+id/bundle"
+        android:layout_below="@+id/bundle"
+        android:layout_marginTop="26dp"
+        android:text="已经添加的人数: " />
 
     <TextView
         android:id="@+id/sum"
@@ -105,6 +105,20 @@
         android:layout_alignLeft="@+id/start"
         android:layout_alignStart="@+id/start"
         android:text="0" />
+
+    <EditText
+        android:id="@+id/bundle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/time"
+        android:layout_alignLeft="@+id/time"
+        android:layout_alignRight="@+id/time"
+        android:layout_alignStart="@+id/time"
+        android:layout_below="@+id/time"
+        android:layout_marginTop="12dp"
+        android:ems="10"
+        android:hint="请选择需要的bundle场景（可为1、2、3）"
+        android:inputType="number" />
 
 
 </RelativeLayout>

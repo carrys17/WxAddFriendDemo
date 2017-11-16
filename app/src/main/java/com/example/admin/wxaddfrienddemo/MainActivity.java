@@ -34,6 +34,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.admin.wxaddfrienddemo.AddUtils.getRandom;
+
  public class MainActivity extends AppCompatActivity {
 
      private static final String TAG = "xyz";
@@ -105,8 +107,8 @@ import java.util.List;
 //                     "--ez Contact_KHideExpose true "+     // 都是true ，去掉也行
 //                     "--es Contact_Nick \"明\" "+  // 微信昵称 ,可以改动，去掉显示微信号了
                      // 只要有这个v1就可以了，去掉就不行了
-                     "--es Contact_User \"v1_f2beaa1797ef0252d0421242b04ab14613f59c18c49bab2e395fc26badaf517a@stranger\" "+   // v1 值
-
+//                     "--es Contact_User \"v1_f2beaa1797ef0252d0421242b04ab14613f59c18c49bab2e395fc26badaf517a@stranger\" "+   // v1 值
+                     "--es Contact_User  \"v1_3030c5f2180425b41b787251deae1f25f4c3b9135b75109c44248cd1f245241ff77aedf1ef2502d629fd7eadaa543a71@stranger\" "+
 //                     "--ei Contact_VUser_Info_Flag 0 "+   // 都为0，可去掉
 //                     "--ei Contact_Sex 1 "+    //  性别，0为女 1为男。设置错误或者去掉的话，性别就没有显示出来了
 //                     "--es Contact_Alias \"lyming1965\" "+  // 微信号
@@ -117,7 +119,7 @@ import java.util.List;
                      "";
 
              // 通过手机号搜索的形式，多了这个字段 Contact_Search_Mobile=13430013863; 然后就是Contact_Scene 为15 ，其他都一样
-           //  Runtime.getRuntime().exec(s);
+//             Runtime.getRuntime().exec(s);
 
 
              // 现在通过群跳转到加人的界面，有两种，第一种是直接在聊天界面点击头像的情况，
@@ -191,6 +193,7 @@ import java.util.List;
 //             Runtime.getRuntime().exec(s3);
 
 
+             // 扫描
              // I/set ( 1517): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false,
              // Contact_QuanPin=wxidqxve6fsx4ery12, Contact_PyInitial=WXIDQXVE6FSX4ERY12,
              // Contact_RegionCode=CN_Guangdong_Guangzhou, Contact_BrandList=<brandlist count="0"
@@ -201,17 +204,253 @@ import java.util.List;
              // Contact_VUser_Info_Flag=0, Contact_Sex=2, Contact_Alias=aa15596417033, Contact_Scene=30,
              // Contact_KWeibo=null, AntispamTicket=v2_973dea324a20f5da3d5de134c8c725d768ffb73ba1ec057d61c89f3140fb128e211dd1239af7f458ef7d20df144fcc76@stranger,
              // Contact_NeedShowChangeSnsPreButton=false}]
-             String s4 = "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
 
+
+
+
+             //I/set     (12773): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=wxidm1hu9rqhn38b12,
+             // Contact_PyInitial=WXIDM1HU9RQHN38B12, Contact_RegionCode=, Contact_BrandList=<brandlist count="0" ver="648862522"></brandlist>,
+             // Contact_KSnsBgId=0, add_more_friend_search_scene=2, Contact_KWeiboNick=null, Contact_KSnsBgUrl=null, Contact_KSnsIFlag=0,
+             // Contact_KWeibo_flag=0, Contact_Signature=null, Contact_BIZ_KF_WORKER_ID=null, Contact_VUser_Info=null, Contact_KHideExpose=true,
+             // Contact_Nick=惠雯, Contact_User=v1_b0c79abc0b38218a5882503152a0d516530ef152a5378a0a91cf07de975ea354ec4cc8eb4dfb18fbaaca4085087bae45@stranger,
+             // Contact_VUser_Info_Flag=0, Contact_Sex=2, Contact_Alias=huiwenasdfgh, Contact_Scene=3, Contact_KWeibo=null,
+             // AntispamTicket=v2_22161d61454a505ba2978ef2b27609848a66406f2f671f1c7c84d1fb83e14cc073ea942588ac2ceabceaee13523870d9@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             String s4 = "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
+                     "--ez Contact_NeedShowChangeRemarkButton false "+
+                     "--es Contact_QuanPin \"wxidm1hu9rqhn38b12\" "+
+                     "--es Contact_PyInitial \"WXIDM1HU9RQHN38B12\" "+
 //                     // v1 值，只给这个就可以跳到加人界面了,可以替换为微信id
-                     "--es Contact_User \"v1_4b6ece89d367aed49ce765008cd11b297b3c3836bbc71c70ad71dc3e5da1b2359ee868dfe958ef76121ce676f53ab246@stranger\" "+
+
+                     "--es Contact_User \"wxid_m1hu9rqhn38b12\" "+
+                     "--es Contact_Nick \"惠雯\" "+
+
+                     "--es Contact_BrandList \"<brandlist count=\"0\" ver=\"648862522\"></brandlist>\" "+
                      // 新的字段。v2值
-//                     "--es AntispamTicket \"v2_f04caa0fcae53fdb9ace3bb69bf1c94ed9ed7bb05f97563a12d2517e9f04115082978692df51d276b522ca1b06060be6@stranger\" "+
-                     "--ei Contact_Scene 30 "  +                          // 微信号搜索的为3，手机号搜索为15,群的方式是14，通讯录是13，名片为17,qq号是12，扫一扫是30
+                     "--ei Contact_VUser_Info_Flag 0 "+
+                     "--es Contact_Alias  \"huiwenasdfgh\" "+
+                     "--es AntispamTicket \"v2_22161d61454a505ba2978ef2b27609848a66406f2f671f1c7c84d1fb83e14cc073ea942588ac2ceabceaee13523870d9@stranger\" "+
+                     "--ei Contact_Scene \"3\" "  +                          // 微信号搜索的为3，手机号搜索为15,群的方式是14，通讯录是13，名片为17,qq号是12，扫一扫是30
+                     "--ei Contact_Sex 2 " +                              // 性别，1为男，2为女,0为未设置
+                     "--ez Contact_NeedShowChangeSnsPreButton false "  + // 都是false，可以去掉
+                     "";
+//             Runtime.getRuntime().exec(s4);
+
+
+
+             // 11.15 下午
+             // 手机号
+             // I/set     (18729): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=wxidba2bjnsjlf5g22,
+             // Contact_PyInitial=WXIDBA2BJNSJLF5G22, Contact_RegionCode=, Contact_BrandList=<brandlist count="0" ver="601500524"></brandlist>,
+             // Contact_KSnsBgId=0, add_more_friend_search_scene=2, Contact_Search_Mobile=15708467068, Contact_KWeiboNick=null,
+             // Contact_KSnsBgUrl=null, Contact_KSnsIFlag=0, Contact_KWeibo_flag=0, Contact_Signature=null, Contact_BIZ_KF_WORKER_ID=null,
+             // Contact_VUser_Info=null, Contact_KHideExpose=true, Contact_Nick=尚恩i,
+             // Contact_User=v1_84ed1072b6840b8ec31868f21275e3f169d024735145537c804332a0f66f2f8fbdac2ccdb2c0807feefa7810d57d54fb@stranger,
+             // Contact_VUser_Info_Flag=0, Contact_Sex=0, Contact_Alias=sangeni, Contact_Scene=15, Contact_KWeibo=null,
+             // AntispamTicket=v2_5762b5784df9d222e714eaea9853c3246f93f29d8186436ca33ad734c83ed2fcaee0b6caa20d31012a127c3e0cbc5bea@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             String s5 = "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
+                     "--ez Contact_NeedShowChangeRemarkButton false "+
+//                     "--es Contact_QuanPin \"wxidba2bjnsjlf5g22\" "+
+//                     "--es Contact_PyInitial \"WXIDBA2BJNSJLF5G22\" "+
+                     "--es Contact_BrandList \"<brandlist count=\"0\" ver=\"601500524\"></brandlist>\" "+
+//                     "--es Contact_Nick \"尚恩i\" "+
+                     // v1 值，只给这个就可以跳到加人界面了,可以替换为微信id
+                     "--es Contact_User \"wxid_ba2bjnsjlf5g22\" "+
+                     // 新的字段。v2值
+                     "--ei Contact_VUser_Info_Flag 0 "+
+//                     "--es Contact_Alias  \"huiwenasdfgh\" "+
+//                     "--es AntispamTicket \"v2_22161d61454a505ba2978ef2b27609848a66406f2f671f1c7c84d1fb83e14cc073ea942588ac2ceabceaee13523870d9@stranger\" "+
+                     "--ei Contact_Scene \"15\" "  +                          // 微信号搜索的为3，手机号搜索为15,群的方式是14，通讯录是13，名片为17,qq号是12，扫一扫是30
+//                     "--ei Contact_Sex 2 " +                              // 性别，1为男，2为女,0为未设置
+                     "--ez Contact_NeedShowChangeSnsPreButton false "  + // 都是false，可以去掉
+                     "";
+//             Runtime.getRuntime().exec(s5);
+
+
+
+             // 名片
+             //I/set     (18729): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=丹[蛋糕]雯,
+             // Contact_Mobile_MD5=null, Contact_PyInitial=DDGW, Contact_ShowUserName=true, Contact_BrandIconURL=,
+             // Contact_Source_FMessage=17, source_from_user_name=wxid_lnt4ahvg2esr22, Contact_KSnsIFlag=0, Contact_Signature=,
+             // Contact_Province=, Contact_FMessageCard=true, User_From_Fmessage=false, Contact_VUser_Info=, source_from_nick_name=林,
+             // Contact_City=, Contact_Nick=丹[蛋糕]雯,
+             // Contact_User=v1_d5609682e4fddebbba9fd0ad68aa8cfde2c7eb905852c2fb468c3741090b38438cedf125e694e373ce93a38bf2b4cc78@stranger,
+             // Contact_VUser_Info_Flag=0, Contact_Sex=2, Contact_Uin=0, Contact_Alias=, Contact_Scene=17, Contact_RemarkName=null,
+             // Contact_full_Mobile_MD5=null, Contact_QQNick=0,
+             // AntispamTicket=v2_bf73e7b747042edb062a0ae26e9b362a87a2b8d18b465a04b96938da8c83c440eee5dee0c12471f877167062f3b9b3d2@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             // 手机号
+             // I/set     (18729): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=wxidzmwujjbdt1vm12,
+             // Contact_PyInitial=WXIDZMWUJJBDT1VM12, Contact_RegionCode=, Contact_BrandList=<brandlist count="0" ver="621853581"></brandlist>,
+             // Contact_KSnsBgId=0, add_more_friend_search_scene=2, Contact_Search_Mobile=17182774674, Contact_KWeiboNick=null, Contact_KSnsBgUrl=null,
+             // Contact_KSnsIFlag=0, Contact_KWeibo_flag=0, Contact_Signature=null, Contact_BIZ_KF_WORKER_ID=null, Contact_VUser_Info=null,
+             // Contact_KHideExpose=true, Contact_Nick=丹[蛋糕]雯,
+             // Contact_User=v1_d5609682e4fddebbba9fd0ad68aa8cfde2c7eb905852c2fb468c3741090b38438cedf125e694e373ce93a38bf2b4cc78@stranger,
+             // Contact_VUser_Info_Flag=0, Contact_Sex=2, Contact_Alias=null, Contact_Scene=15, Contact_KWeibo=null,
+             // AntispamTicket=v2_bf73e7b747042edb062a0ae26e9b362a9dfc362fabdc9d68bdc9bedcc4b236a13eca84951682b165b686cf613ba5ebb9@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             String s6 = "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
+//                     "--ez Contact_NeedShowChangeRemarkButton false "+
+//                     "--es Contact_QuanPin \"丹[蛋糕]雯\" "+
+//                     "--es Contact_PyInitial \"DDGW\" "+
+//                     "--es source_from_user_name \"wxid_lnt4ahvg2esr22\" "+
+//                     "--es Contact_Nick \"尚恩i\" "+
+                     // v1 值，只给这个就可以跳到加人界面了,可以替换为微信id
+                     "--es Contact_User \"wxid_zmwujjbdt1vm12\" "+
+                     // 新的字段。v2值
+//                     "--ei Contact_VUser_Info_Flag 0 "+
+//                     "--es Contact_Alias  \"huiwenasdfgh\" "+
+//                     "--es AntispamTicket \"v2_bf73e7b747042edb062a0ae26e9b362a87a2b8d18b465a04b96938da8c83c440eee5dee0c12471f877167062f3b9b3d2@stranger\" "+
+                     "--ei Contact_Scene \"15\" "  +         // 微信号搜索的为3，手机号搜索为15,群的方式是14，通讯录是13，名片为17,qq号是12，扫一扫是30
 //                     "--ei Contact_Sex 2 " +                              // 性别，1为男，2为女,0为未设置
 //                     "--ez Contact_NeedShowChangeSnsPreButton false "  + // 都是false，可以去掉
                      "";
-             Runtime.getRuntime().exec(s4);
+           //  Runtime.getRuntime().exec(s6);
+
+
+
+             // 手机号
+             // I/set     (18729): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=wxid0r3mea7v5wvc12,
+             // Contact_PyInitial=WXID0R3MEA7V5WVC12, Contact_RegionCode=, Contact_BrandList=<brandlist count="0" ver="605668921"></brandlist>,
+             // Contact_KSnsBgId=0, add_more_friend_search_scene=2, Contact_Search_Mobile=13535296697, Contact_KWeiboNick=null, Contact_KSnsBgUrl=null,
+             // Contact_KSnsIFlag=0, Contact_KWeibo_flag=0, Contact_Signature=null, Contact_BIZ_KF_WORKER_ID=null, Contact_VUser_Info=null,
+             // Contact_KHideExpose=true, Contact_Nick=玻璃雯,
+             // Contact_User=v1_087eeb4bde77e18cc4595b35dd05f60a6c2c49259e34cd20eacccbbedb6a729723b4459bf8a67d1ace6daa85ffd24bf5@stranger,
+             // Contact_VUser_Info_Flag=0, Contact_Sex=2, Contact_Alias=boliwenasd, Contact_Scene=15, Contact_KWeibo=null,
+             // AntispamTicket=v2_a5a426a6f958ef0e74a2d516725af86bae5e37fc47d57813340af1208e8cfbd1cc195a0001d3223744484be3b7aeaa8c@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             String s7 = "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
+                     "--ez Contact_NeedShowChangeRemarkButton false "+
+                     "--es Contact_QuanPin \"wxid0r3mea7v5wvc12\" "+
+                     "--es Contact_PyInitial \"WXID0R3MEA7V5WVC12\" "+
+                     "--es Contact_BrandList \"<brandlist count=\"0\" ver=\"605668921\"></brandlist>\" "+
+                     "--ez Contact_KHideExpose true "+
+                     "--ei add_more_friend_search_scene 2 "+
+                     "--es Contact_Nick \"玻璃雯\" "+
+                     // v1 值，只给这个就可以跳到加人界面了,可以替换为微信id
+                     "--es Contact_User \"wxid_0r3mea7v5wvc12\" "+
+                     "--es Contact_Alias \"boliwenasd\" "+
+                     "--ei Contact_VUser_Info_Flag 0 "+
+                     "--es AntispamTicket \"v2_a5a426a6f958ef0e74a2d516725af86bae5e37fc47d57813340af1208e8cfbd1cc195a0001d3223744484be3b7aeaa8c@stranger\" "+
+                     "--ei Contact_Scene \"15\" "  +        // 微信号搜索的为3，手机号搜索为15,群的方式是14，通讯录是13，名片为17,qq号是12，扫一扫是30
+                     "--ei Contact_Sex 2 " +                              // 性别，1为男，2为女,0为未设置
+                     "--ez Contact_NeedShowChangeSnsPreButton false "  + // 都是false，可以去掉
+                     "";
+//             Runtime.getRuntime().exec(s7);
+
+
+
+             // 11.16
+             //I/set     ( 1193): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=wxidy2o2iapftivz22,
+             // Contact_PyInitial=WXIDY2O2IAPFTIVZ22, Contact_RegionCode=, Contact_BrandList=<brandlist count="0" ver="644103549"></brandlist>,
+             // Contact_KSnsBgId=0, add_more_friend_search_scene=2, Contact_Search_Mobile=18483660024, Contact_KWeiboNick=null, Contact_KSnsBgUrl=null,
+             // Contact_KSnsIFlag=0, Contact_KWeibo_flag=0, Contact_Signature=null, Contact_BIZ_KF_WORKER_ID=null, Contact_VUser_Info=null,
+             // Contact_KHideExpose=true, Contact_Nick=飘雯,
+             // Contact_User=v1_864c3055b0c6f481aeded517dfccd61f392856e1bcea6acb41e917f82fa76af201d9b531f537091774462585a1feaab0@stranger,
+             // Contact_VUser_Info_Flag=0, Contact_Sex=0, Contact_Alias=swm18483660024, Contact_Scene=15, Contact_KWeibo=null,
+             // AntispamTicket=v2_e2727d506e1f4afe6083dddfd630ea80237ecb07cb11b62291400bb0401328386ca778a34ec2a0ab88e7298fedcfb945@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             String s8 =  "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
+                     "--ez Contact_NeedShowChangeRemarkButton false "+
+                     "--es Contact_QuanPin \"nanguaiiasd\" "+
+                     "--es Contact_PyInitial \"NANGUAIIASD\" "+
+                     "--es Contact_BrandList \"<brandlist count=\"0\" ver=\"646123549\"></brandlist>\" "+
+                     "--ei Contact_KSnsBgId 0 "+
+//                     "--ei add_more_friend_search_scene 2 " +
+//                     "--es Contact_Search_Mobile \"13553324534\" "+
+                     "--es Contact_KWeiboNick \"null\" "+
+                     "--es Contact_KSnsBgUrl \"null\" "+
+                     "--ei Contact_KSnsIFlag 0 "+
+                     "--ei Contact_KWeibo_flag 0 "+
+                     "--es Contact_Signature \"null\" "+
+                     "--es Contact_BIZ_KF_WORKER_ID \"null\" "+
+                     "--es Contact_VUser_Info \"null\" "+
+                     "--ez Contact_KHideExpose true "+
+//                     "--es Contact_Nick \"飘雯\" "+
+                     // v1 值，只给这个就可以跳到加人界面了,可以替换为微信id
+                     "--es Contact_User \"nanguaiiasd\" "+
+                  //   "--ei Contact_VUser_Info_Flag 0 "+   ............
+                     "--ei Contact_Sex 0 "+
+//                     "--es Contact_Alias \"s6ffdfsw23\" "+
+                     "--ei Contact_Scene \"15\" "  +        // 微信号搜索的为3，手机号搜索为15,群的方式是14，通讯录是13，名片为17,qq号是12，扫一扫是30
+                     "--es Contact_KWeibo \"null\" "+
+//                     "--es AntispamTicket \"v2_e2727d506e1f4afe6083dddfd630ea80237ecb07cb11b62291400bb0401328386ca778a34ec2a0ab88e7298fedcfb945@stranger\" "+
+                     "--ez Contact_NeedShowChangeSnsPreButton false "+
+                     "";
+//                  Runtime.getRuntime().exec(s8);
+
+             //I/set     ( 1193): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=wxidlnt4ahvg2esr22,
+             // Contact_PyInitial=WXIDLNT4AHVG2ESR22, Contact_RegionCode=CN_Guangdong_Guangzhou, Contact_BrandList=<brandlist count="0" ver="665822986"></brandlist>,
+             // Contact_KSnsBgId=0, add_more_friend_search_scene=2, Contact_Search_Mobile=18814143556, Contact_KWeiboNick=null, Contact_KSnsBgUrl=null,
+             // Contact_KSnsIFlag=0, Contact_KWeibo_flag=0, Contact_Signature=多的是，你不知道的事, Contact_BIZ_KF_WORKER_ID=null, Contact_VUser_Info=null,
+             // Contact_KHideExpose=true, Contact_Nick=林, Contact_User=wxid_lnt4ahvg2esr22, Contact_VUser_Info_Flag=0, Contact_Sex=1,
+             // Contact_Alias=q961513094, Contact_Scene=15, Contact_KWeibo=null,
+             // AntispamTicket=v2_e574085f9339eb7cdac3e14cac25a4bcbb1f186311910df6c32be54b4ebe4c5b3caafa2fcee01e96195b5e1c39f1dd8f@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             String s9 =  "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
+                     "--ez Contact_NeedShowChangeRemarkButton false "+
+                     "--es Contact_QuanPin \"wxidlnt4ahvg2esr22\" "+
+                     "--es Contact_PyInitial \"WXIDLNT4AHVG2ESR22\" "+
+                     "--ei Contact_KSnsBgId 0 "+
+                     "--ei add_more_friend_search_scene 2 " +
+//                     "--es Contact_Search_Mobile \"13553324534\" "+
+                     "--es Contact_KWeiboNick \"null\" "+
+                     "--es Contact_KSnsBgUrl \"null\" "+
+                     "--ei Contact_KSnsIFlag 0 "+
+                     "--ei Contact_KWeibo_flag 0 "+
+                     "--es Contact_Signature \"null\" "+
+                     "--es Contact_BIZ_KF_WORKER_ID \"null\" "+
+                     "--es Contact_VUser_Info \"null\" "+
+                     "--ez Contact_KHideExpose true "+
+//                     "--es Contact_Nick \"飘雯\" "+
+                     // v1 值，只给这个就可以跳到加人界面了,可以替换为微信id
+                     "--es Contact_User \"wxid_lnt4ahvg2esr22\" "+
+                     "--ei Contact_VUser_Info_Flag 0 " +// ............
+
+//                     "--ei Contact_Sex 0 "+
+//                     "--es Contact_Alias \"s6ffdfsw23\" "+
+                     "--ei Contact_Scene 15 "+   // 微信号搜索的为3，手机号搜索为15,群的方式是14，通讯录是13，名片为17,qq号是12，扫一扫是30
+                     "--es Contact_KWeibo \"null\" "+
+////                     "--es AntispamTicket \"v2_e2727d506e1f4afe6083dddfd630ea80237ecb07cb11b62291400bb0401328386ca778a34ec2a0ab88e7298fedcfb945@stranger\" "+
+                     "--ez Contact_NeedShowChangeSnsPreButton false "+
+                     "";
+//                  Runtime.getRuntime().exec(s9);
+
+
+             //I/set     ( 1517): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Contact_QuanPin=wxidqxve6fsx4ery12,
+             // Contact_PyInitial=WXIDQXVE6FSX4ERY12, Contact_RegionCode=CN_Guangdong_Guangzhou,
+             // Contact_BrandList=<brandlist count="0" ver="684775412"></brandlist>, Contact_KSnsBgId=0, Contact_IsLBSFriend=true,
+             // Contact_KWeiboNick=null, Contact_KSnsBgUrl=null, Contact_KSnsIFlag=0, Contact_KWeibo_flag=0,
+             // Contact_Signature=宅若久时天然呆, 呆到深处自然萌, Contact_BIZ_KF_WORKER_ID=null, Contact_VUser_Info=null,
+             // Contact_KHideExpose=true, Contact_Nick=雯雯,
+             // Contact_User=v1_4b6ece89d367aed49ce765008cd11b297b3c3836bbc71c70ad71dc3e5da1b2359ee868dfe958ef76121ce676f53ab246@stranger,
+             // Contact_VUser_Info_Flag=0, Contact_Sex=2, Contact_Alias=aa15596417033, Contact_Scene=30, Contact_KWeibo=null,
+             // AntispamTicket=v2_973dea324a20f5da3d5de134c8c725d768ffb73ba1ec057d61c89f3140fb128e211dd1239af7f458ef7d20df144fcc76@stranger,
+             // Contact_NeedShowChangeSnsPreButton=false}]
+             String test = "adb shell am start -n com.tencent.mm/com.tencent.mm.plugin.profile.ui.ContactInfoUI "+
+                     "--ez Contact_NeedShowChangeRemarkButton false "+
+                     "--es Contact_QuanPin \"wxidlnt4ahvg2esr22\" "+
+                     "--es Contact_PyInitial \"WXIDLNT4AHVG2ESR22\" "+
+                     "--es Contact_BrandList \"<brandlist count=\"0\" ver=\""+getRandom()+"\"></brandlist>\" "+
+                     "--ei Contact_KSnsBgId 0 "+
+                     "--ez Contact_IsLBSFriend true "+
+                     "--es Contact_KWeiboNick \"null\" "+
+                     "--es Contact_KSnsBgUrl \"null\" "+
+                     "--ei Contact_KSnsIFlag 0 "+
+                     "--ei Contact_KWeibo_flag 0 "+
+                     "--es Contact_Signature \"null\" "+
+                     "--es Contact_BIZ_KF_WORKER_ID \"null\" "+
+                     "--es Contact_VUser_Info \"null\" "+
+                     "--ez Contact_KHideExpose true "+
+                     "--es Contact_User \"wxid_lnt4ahvg2esr22\" "+
+                     "--ei Contact_VUser_Info_Flag 0 "+
+                     "--ei Contact_Scene 30 "+
+                     "--es Contact_KWeibo \"null\" "+
+                     "--ez Contact_NeedShowChangeSnsPreButton false "+
+                     "";
+             Runtime.getRuntime().exec(test);
+
          } catch (IOException e) {
              e.printStackTrace();
          }

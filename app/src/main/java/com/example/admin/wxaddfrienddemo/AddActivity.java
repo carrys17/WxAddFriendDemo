@@ -83,6 +83,10 @@ public class AddActivity extends AppCompatActivity {
 
     StringBuilder saveString = new StringBuilder();
 
+    EditText etBundleScene;
+
+    int bundleScene;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +98,7 @@ public class AddActivity extends AppCompatActivity {
         btnStart = findViewById(R.id.start);
         etTime = findViewById(R.id.time);
         tvSum = findViewById(R.id.sum);
+        etBundleScene = findViewById(R.id.bundle);
 
         handler = new Handler(){ // 更新已添加的总数
             @Override
@@ -105,7 +110,11 @@ public class AddActivity extends AppCompatActivity {
                     case 111:
                         Log.i("xyz","接受到111");
                         // 在主线程中弹吐司，虽然子线程可以吐司，但是有时显示不出来，被微信自己的覆盖了
-                        showToast();
+                        Toast.makeText(getApplicationContext(),"尝试添加"+wxid,Toast.LENGTH_SHORT).show();
+                        break;
+                    case 222:
+                        String s = (String) msg.obj;
+                        Toast.makeText(getApplicationContext(),s,Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -137,14 +146,27 @@ public class AddActivity extends AppCompatActivity {
     }
 
 
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void startJump() {
-        if (TextUtils.isEmpty(etScene.getText()) || TextUtils.isEmpty(etHello.getText())) {
+        if (TextUtils.isEmpty(etScene.getText()) || TextUtils.isEmpty(etHello.getText()) || TextUtils.isEmpty(etBundleScene.getText())) {
             Toast.makeText(AddActivity.this, "场景和验证信息不能为空", LENGTH_SHORT).show();
-        } else {
+        }else {
             scene = Integer.parseInt(etScene.getText().toString().trim());
             hello = etHello.getText().toString().trim();
+            bundleScene = Integer.parseInt(etBundleScene.getText().toString().trim());
+            if (bundleScene > 3 || bundleScene < 1 ){
+                Message message = new Message();
+                message.what = 222;
+                message.obj = "请选择正确的bundle方式";
+                handler.sendMessage(message);
+            }
+            if ((bundleScene == 2 || bundleScene == 3)&& (scene !=14 && scene !=15 && scene !=30) ){
+                Message message = new Message();
+                message.what = 222;
+                message.obj = "此种bundle模式下的添加场景只能为14、15或30";
+                handler.sendMessage(message);
+            }
+
             if (TextUtils.isEmpty(etTime.getText())){
                 time = 10 * 1000;
             }else {
@@ -154,8 +176,9 @@ public class AddActivity extends AppCompatActivity {
             for (String info : list) {
                 wxid = info;
                 setCnt(0);
+                sleepRandom();
                 // 跳转到加人界面
-                AddUtils.addFriend(info, scene);
+                AddUtils.addFriend(info, scene, bundleScene);
                 //showToast();
                 // 线程睡眠，让出cpu
                 waitfor(20000);
@@ -166,6 +189,7 @@ public class AddActivity extends AppCompatActivity {
                         Log.i("xyz","没有添加按钮，说明已经是好友了");
                         finishAndReturn();
                     }
+
                     // 点击添加按钮
                     clickAddButton();
                     // 显示尝试添加的吐司
@@ -182,6 +206,14 @@ public class AddActivity extends AppCompatActivity {
                     waitfor(20000);
                     if (getCnt()>= 1){
                         setCnt(0);
+                        // 如果对方设置了不能通过某场景添加ta
+                        if (cannotAddBySomeScene()){
+                            // 点击确认按钮
+                            clickConfirm();
+                            sleepRandom();
+                            // 接着点击返回
+                            finishAndReturn();
+                        }
                         // 判断是否需要验证
                         if (isNeedVerify()){
                             // 设置验证信息并发送
@@ -203,6 +235,61 @@ public class AddActivity extends AppCompatActivity {
             }
         }
     }
+
+
+
+    private void sleepRandom(){
+        double ran = Math.random();
+        long lon = (long) (1500 + ran *1000);
+        SystemClock.sleep(lon);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private void clickConfirm() {
+        Log.i("xyz","进入点击确认按钮");
+        AccessibilityNodeInfo root = getRoot();
+        List<AccessibilityNodeInfo> list ;
+        do {
+            list = root.findAccessibilityNodeInfosByText("确定");
+        }while (list == null);
+        if (list.size() > 0){
+            Log.i("xyz","找到确定按钮");
+            for (AccessibilityNodeInfo info : list){
+                Log.i("xyz","info - "+info);
+                // 点击按钮
+                info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                break;
+            }
+        }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private boolean cannotAddBySomeScene() {    // 找到界面中是否有确定按钮
+        Log.i("xyz","进入查找确认按钮");
+        AccessibilityNodeInfo root = getRoot();
+//        List<AccessibilityNodeInfo> list ;
+//        long s = System.currentTimeMillis();
+//        do {
+//            long s2 = System.currentTimeMillis();
+//            if (s2 - s >=5000){
+//                return false;
+//            }
+//            list = root.findAccessibilityNodeInfosByText("确定");
+//            SystemClock.sleep(200);
+//        }while (list == null);
+
+        List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByText("确定");
+        if (list.size() > 0){
+            Log.i("xyz","找到确定按钮");
+            return true;
+        }else {
+            Log.i("xyz","找不到确认按钮");
+            return false;
+        }
+    }
+
+
 
     private void sendToUI() {
         Message message = new Message();
@@ -232,14 +319,8 @@ public class AddActivity extends AppCompatActivity {
         FileOutputStream fos = new FileOutputStream(localFile,false); // 这里的第二个参数代表追加还是覆盖，true为追加，false为覆盖
         fos.write(saveString.toString().getBytes());
         fos.close();
-
     }
 
-    private void showToast() {
-        Log.i("xyz","调用了toast");
-        Toast.makeText(getApplicationContext(),"尝试添加"+wxid,Toast.LENGTH_SHORT).show();
-
-    }
 
     //设置Toast对象
     private Toast mToast = null;
@@ -257,12 +338,26 @@ public class AddActivity extends AppCompatActivity {
         AccessibilityNodeInfo root = getRoot();
         // 获取到添加按钮
         // List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ahp");
-        List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByText("添加");
+        List<AccessibilityNodeInfo> list;
+        long aa = System.currentTimeMillis();
+        do {
+            long bb =  System.currentTimeMillis();
+            if (bb - aa >= 5000){
+                Log.i("xyz","规定时间内找不到添加按钮，直接返回false");
+                return false;
+            }
+            list = root.findAccessibilityNodeInfosByText("添加");
+            SystemClock.sleep(200);
+        }while (list == null);
+
         if (list.size() > 0){
             Log.i("xyz","找到添加按钮");
            return true;
+        }else {
+            return false;
         }
-        return false;
+
+
     }
 
     private AccessibilityNodeInfo findReturn(AccessibilityNodeInfo root) {
@@ -322,7 +417,11 @@ public class AddActivity extends AppCompatActivity {
 
     private boolean isNeedVerify() {
         AccessibilityNodeInfo rootInfo = getRoot();
-        List<AccessibilityNodeInfo> list =  rootInfo.findAccessibilityNodeInfosByText("验证");
+        List<AccessibilityNodeInfo> list;
+        do {
+            list =  rootInfo.findAccessibilityNodeInfosByText("验证");
+            SystemClock.sleep(200);
+        }while (list==null);
         if (list.size()<=0){
             return false;
         }else {
@@ -372,6 +471,7 @@ public class AddActivity extends AppCompatActivity {
 
         returnInfo = findReturn(root);
 
+        sleepRandom();
         if (returnInfo == null){
             Log.i("xyz","找到的返回为null");
         }else {
@@ -382,8 +482,6 @@ public class AddActivity extends AppCompatActivity {
             // 点击返回
             returnInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
         }
-
-
     }
 
 
@@ -430,14 +528,16 @@ public class AddActivity extends AppCompatActivity {
 
         // 点击发送按钮
         //List<AccessibilityNodeInfo> sendList = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/gy");
-        List<AccessibilityNodeInfo> sendList = root.findAccessibilityNodeInfosByText("发送");
+        List<AccessibilityNodeInfo> sendList;
+        do {
+            sendList = root.findAccessibilityNodeInfosByText("发送");
+            SystemClock.sleep(200);
+        }while (sendList == null);
+        sleepRandom();
         for (AccessibilityNodeInfo info : sendList){
             Log.i("xyz","点击了发送");
             info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
         }
-
-
-
     }
 
     // 找到验证输入框
@@ -489,7 +589,7 @@ public class AddActivity extends AppCompatActivity {
             try {
                 Runtime.getRuntime().exec(adb);
                 Log.i("xyz","执行一次");
-                SystemClock.sleep(500); // 睡眠是为了保证能够全部清除
+                SystemClock.sleep(300); // 睡眠是为了保证能够全部清除
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -503,7 +603,13 @@ public class AddActivity extends AppCompatActivity {
         AccessibilityNodeInfo root = getRoot();
         // 获取到添加按钮
         // List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ahp");
-        List<AccessibilityNodeInfo> list = root.findAccessibilityNodeInfosByText("添加");
+        List<AccessibilityNodeInfo> list;
+        do {
+            list = root.findAccessibilityNodeInfosByText("添加");
+            SystemClock.sleep(200);
+        }while (list == null);
+
+        sleepRandom();
         if (list.size() > 0){
             Log.i("xyz","找到添加按钮");
             for (AccessibilityNodeInfo info : list){
