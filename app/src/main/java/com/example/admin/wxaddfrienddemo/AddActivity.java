@@ -5,7 +5,10 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -45,6 +48,7 @@ import java.util.Date;
 import java.util.List;
 
 import static android.widget.Toast.LENGTH_SHORT;
+import static com.example.admin.wxaddfrienddemo.MyService.getContext;
 
 /**
  * Created by admin on 2017/11/8.
@@ -87,10 +91,24 @@ public class AddActivity extends AppCompatActivity {
 
     int bundleScene;
 
+    Button btnWxid;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
+
+
+        int mode = getIntent().getIntExtra("mode",-1);
+
+        if (mode == 1){
+            findViewById(R.id.wxid).setVisibility(View.INVISIBLE);
+        }else if (mode ==2){
+            findViewById(R.id.bundle).setVisibility(View.INVISIBLE);
+            findViewById(R.id.start).setVisibility(View.INVISIBLE);
+        }
+
         btnSelect = findViewById(R.id.select);
         etScene = findViewById(R.id.et_scene);
         etHello = findViewById(R.id.et_hello);
@@ -99,6 +117,7 @@ public class AddActivity extends AppCompatActivity {
         etTime = findViewById(R.id.time);
         tvSum = findViewById(R.id.sum);
         etBundleScene = findViewById(R.id.bundle);
+        btnWxid = findViewById(R.id.wxid);
 
         handler = new Handler(){ // 更新已添加的总数
             @Override
@@ -143,6 +162,174 @@ public class AddActivity extends AppCompatActivity {
 
             }
         });
+
+        btnWxid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new Thread(new Runnable() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        startJumpByWxid();
+                        Looper.loop();
+                    }
+                }).start();
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private void startJumpByWxid() {
+        if (TextUtils.isEmpty(etScene.getText()) || TextUtils.isEmpty(etHello.getText()) ) {
+            Toast.makeText(AddActivity.this, "场景和验证信息不能为空", LENGTH_SHORT).show();
+        }else {
+            scene = Integer.parseInt(etScene.getText().toString().trim());
+            hello = etHello.getText().toString().trim();
+
+            if (TextUtils.isEmpty(etTime.getText())){
+                time = 10 * 1000;
+            }else {
+                time = Long.parseLong(etTime.getText().toString().trim()) * 1000;
+            }
+            num = list.size();
+            //先跳到主界面
+            startWechat();
+            if (!startFinish()) {
+                Log.i("xyz","微信启动失败");
+            }else {
+
+//                SystemClock.sleep(10000);
+                for (String info : list) {
+                    wxid = info;
+                    setCnt(0);
+
+
+
+                    sendMyBroadcast(info, scene);
+
+
+//                // 将数据存储进sp里面
+//                putDataToSp(info,scene);
+
+
+//                sleepRandom();
+//                // 获取微信context
+//                Context wxContext = Module.applicationContext;
+//                // 跳转到验证界面
+//                AddUtils.addFriendByWxid(wxContext,info,scene);
+                        // 线程睡眠，让出cpu
+//                waitfor(20000);
+//                // 是否跳转成功，点击添加到通讯录按钮
+//                if(getCnt() >= 1){
+//                    setCnt(0);
+//                    if (!hasAddBtn()){ // 没有添加按钮，说明已经是好友了,直接返回
+//                        Log.i("xyz","没有添加按钮，说明已经是好友了");
+//                        finishAndReturn();
+//                    }
+
+                        // 点击添加按钮
+//                    clickAddButton();
+                        // 显示尝试添加的吐司
+//                     showToast();
+//                    sendToUI();
+//                    try {
+//                        // 输出log到本地
+//                        writeToLocal();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+                        // showTextToast("尝试添加 "+wxid);
+                        // 是否跳转成功,填入验证信息，点击发送按钮
+                       waitfor(20000);
+                        if (getCnt() >= 1) {
+                            setCnt(0);
+                            sendToUI();
+                        try {
+                            // 输出log到本地
+                            writeToLocal();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        // 如果对方设置了不能通过某场景添加ta
+                        if (cannotAddBySomeScene()) {
+                            // 点击确认按钮
+                            clickConfirm();
+                            sleepRandom();
+                            // 接着点击返回
+                            finishAndReturn();
+                        }
+                        // 判断是否需要验证
+                        if (isNeedVerify()) {
+                            // 设置验证信息并发送
+                            sendMessage();
+                            // 更新添加个数
+                            refrensh();
+                            waitfor(20000);
+                            if (getCnt() >= 1) {
+//                                // 是否发送成功，点击左上角返回
+//                                finishAndReturn();
+                                SystemClock.sleep(time);
+                            }
+                        } else {
+                            finishAndReturn();
+                            SystemClock.sleep(time);
+                        }
+                    }
+//                }
+                }
+            }
+        }
+    }
+
+    private boolean startFinish() {
+        // 获取到添加按钮
+        List<AccessibilityNodeInfo> list = null;
+        long aa = System.currentTimeMillis();
+        do {
+            AccessibilityNodeInfo root = getRoot();
+            long bb =  System.currentTimeMillis();
+            if (bb - aa >= 30000){
+                Log.e("xyz","sss");
+                return false;
+
+            }
+
+            if (root!=null) {
+                list = root.findAccessibilityNodeInfosByText("微信");
+            }
+            SystemClock.sleep(500);
+        }while (list == null || list.size() == 0);
+
+        if (list!=null && list.size() > 0){
+            Log.i("xyz","微信启动完成");
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void sendMyBroadcast(String info, int scene) {
+        Intent intent = new Intent("com.example.admin.wxaddfrienddemo.broadcast");
+        Bundle bundle = new Bundle();
+        bundle.putString("wxid",info);
+        bundle.putInt("scene",scene);
+        intent.putExtras(bundle);
+        sendBroadcast(intent);
+        Log.i("xyz","activity 发送广播");
+    }
+
+
+
+    private void startWechat() {
+        Intent intent = new Intent();
+        ComponentName cmp=new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setComponent(cmp);
+        startActivity(intent);
     }
 
 
@@ -298,7 +485,7 @@ public class AddActivity extends AppCompatActivity {
         handler.sendMessage(message);
     }
 
-    private void writeToLocal() throws IOException {
+    private void  writeToLocal() throws IOException {
         //  路径名
         File file = new File("/sdcard/tmp/");
         if (!file.exists()){
@@ -367,7 +554,7 @@ public class AddActivity extends AppCompatActivity {
         AccessibilityNodeInfo res = null;
         for (int i = 0; i < root.getChildCount(); i++) {
             AccessibilityNodeInfo nodeInfo = root.getChild(i);
-            if (nodeInfo.getClassName().equals("android.widget.ImageView")) {
+            if (nodeInfo!=null &&nodeInfo.getClassName().equals("android.widget.ImageView")) {
                 Log.i("xyz","获取到ImageView");
                 Log.i("xyz","nodeInfo = "+nodeInfo);
                 Rect rect = new Rect();
@@ -412,13 +599,13 @@ public class AddActivity extends AppCompatActivity {
 //            Toast.makeText(getApplicationContext(),"添加"+ wxid  +"成功,当前总个数"+sum+"/"+num+"其中成功个数为： "+successNum+
 //                    " 失败个数为： "+failNum,Toast.LENGTH_LONG).show();
 //        }
-        SystemClock.sleep(1000);
+//        SystemClock.sleep(1000);
     }
 
     private boolean isNeedVerify() {
-        AccessibilityNodeInfo rootInfo = getRoot();
         List<AccessibilityNodeInfo> list;
         do {
+            AccessibilityNodeInfo rootInfo = getRoot();
             list =  rootInfo.findAccessibilityNodeInfosByText("验证");
             SystemClock.sleep(200);
         }while (list==null);
@@ -440,8 +627,6 @@ public class AddActivity extends AppCompatActivity {
             }
             SystemClock.sleep(500);
         }while (getCnt() == 0);
-
-
     }
 
 
@@ -488,7 +673,7 @@ public class AddActivity extends AppCompatActivity {
     // 每次都等待1s后获取root根节点信息
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private AccessibilityNodeInfo getRoot() {
-        mService = (AccessibilityService) MyService.getContext();
+        mService = (AccessibilityService)getContext();
         AccessibilityNodeInfo root;
         do {
             root = mService.getRootInActiveWindow();
@@ -497,15 +682,20 @@ public class AddActivity extends AppCompatActivity {
         return root;
     }
 
+
+
     // 验证信息EditText框
-    AccessibilityNodeInfo edit;
+    AccessibilityNodeInfo editInfo;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void sendMessage() {
-        AccessibilityNodeInfo root = getRoot();
 
-       // printfAll(root);
-        // 找到输入框
-        edit = findEditText(root);
+        do {
+            AccessibilityNodeInfo root = getRoot();
+            editInfo = findEditText(root);
+            SystemClock.sleep(200);
+        }while (editInfo == null);
+
+
 //        if (edit == null){
 //            Log.i("xyz","edit为空");
 //        }else {
@@ -513,23 +703,24 @@ public class AddActivity extends AppCompatActivity {
 //        }
         // 清除原本信息
 
-
-
-        if (!TextUtils.isEmpty(edit.getText())){ // 如果不为空。清理
-            ClearAllText(edit);
+        sleepRandom();
+        if (!TextUtils.isEmpty(editInfo.getText())){ // 如果不为空。清理
+            ClearAllText(editInfo);
         }
+
         // 设置验证信息
         ClipboardManager manager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         String text = hello;
         ClipData data = ClipData.newPlainText("text",text);
         manager.setPrimaryClip(data);
-        edit.performAction(AccessibilityNodeInfo.ACTION_PASTE);
+        editInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE);
 
 
         // 点击发送按钮
         //List<AccessibilityNodeInfo> sendList = root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/gy");
         List<AccessibilityNodeInfo> sendList;
         do {
+            AccessibilityNodeInfo root = getRoot();
             sendList = root.findAccessibilityNodeInfosByText("发送");
             SystemClock.sleep(200);
         }while (sendList == null);
@@ -540,35 +731,35 @@ public class AddActivity extends AppCompatActivity {
         }
     }
 
-    // 找到验证输入框
-    private AccessibilityNodeInfo findEditText(AccessibilityNodeInfo root) {
-        if (root == null){
-            return null;
-        }
-        AccessibilityNodeInfo res = null;
+        // 找到验证输入框
+        private AccessibilityNodeInfo findEditText(AccessibilityNodeInfo root) {
+            if (root == null){
+                return null;
+            }
+            AccessibilityNodeInfo res = null;
 
-        for (int i = 0; i < root.getChildCount(); i++) {
-            AccessibilityNodeInfo nodeInfo = root.getChild(i);
-            if (nodeInfo.getClassName().equals("android.widget.EditText")) {
-                Log.i("xyz","获取到editteXt");
-                Log.i("xyz","nodeInfo = "+nodeInfo);
-                Rect rect = new Rect();
-                nodeInfo.getBoundsInScreen(rect);
-                int x = rect.centerX();
-                int y = rect.centerY();
-                if (9 < x && x < 371 && 80 < y && y < 108) {
-                    res =  nodeInfo;
-                    break; // 这里必须有这个break，表示找到输入框之后就会打破循环，将找到的值返回
-                }
-            }else {
-                res = findEditText(nodeInfo);
-                if (res != null){
-                    return res;
+            for (int i = 0; i < root.getChildCount(); i++) {
+                AccessibilityNodeInfo nodeInfo = root.getChild(i);
+                if (nodeInfo.getClassName().equals("android.widget.EditText")) {
+                    Log.i("xyz","获取到editteXt");
+                    Log.i("xyz","nodeInfo = "+nodeInfo);
+                    Rect rect = new Rect();
+                    nodeInfo.getBoundsInScreen(rect);
+                    int x = rect.centerX();
+                    int y = rect.centerY();
+                    if (9 < x && x < 371 && 80 < y && y < 108) {
+                        res =  nodeInfo;
+                        break; // 这里必须有这个break，表示找到输入框之后就会打破循环，将找到的值返回
+                    }
+                }else {
+                    res = findEditText(nodeInfo);
+                    if (res != null){
+                        return res;
+                    }
                 }
             }
+            return res;
         }
-        return res;
-    }
 
     private void printfAll(AccessibilityNodeInfo root){
         for (int i = 0; i < root.getChildCount(); i++) {
@@ -765,6 +956,7 @@ public class AddActivity extends AppCompatActivity {
     private void getTxtInfo() {
         File file = new File(filePath);
         String line = "";
+        list.clear();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             while ((line = br.readLine()) != null) {

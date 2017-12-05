@@ -44,6 +44,7 @@ public class MyService extends AccessibilityService {
         if (sInstance == null){
             sInstance = this;
         }
+        Log.i("xyz","服务开启");
 
     }
 

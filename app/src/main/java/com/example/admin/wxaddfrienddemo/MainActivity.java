@@ -58,7 +58,7 @@ import static com.example.admin.wxaddfrienddemo.AddUtils.getRandom;
 //                }
 //            }
 //        });
-    }
+ }
 
 
 

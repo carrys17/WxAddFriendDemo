@@ -23,11 +23,13 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/tv_hint"
         android:layout_alignStart="@+id/tv_hint"
-        android:layout_below="@+id/tv_hint"
+        android:layout_alignTop="@+id/tv_hint"
+        android:layout_marginTop="23dp"
         android:text="选择" />
 
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/tv_hint"
@@ -35,9 +37,7 @@
         android:layout_alignRight="@+id/tv_hint"
         android:layout_alignStart="@+id/select"
         android:layout_below="@+id/select"
-        android:layout_marginTop="14dp"
-        android:text="请输入你需要的场景模式： 群里非好友14；微信号3、手机号15、QQ号12；通讯录 13；扫一扫 30；名片 17"
-        android:id="@+id/textView" />
+        android:text="请输入你需要的场景模式： 群里非好友14；微信号3、手机号15、QQ号12；通讯录 13；扫一扫 30；名片 17" />
 
 
     <EditText
@@ -49,7 +49,6 @@
         android:layout_alignRight="@+id/textView"
         android:layout_alignStart="@+id/textView"
         android:layout_below="@+id/textView"
-        android:layout_marginTop="13dp"
         android:hint="场景模式" />
 
     <EditText
@@ -61,30 +60,29 @@
         android:layout_alignRight="@+id/et_scene"
         android:layout_alignStart="@+id/et_scene"
         android:layout_below="@+id/et_scene"
-        android:layout_marginTop="16dp"
         android:hint="发送的验证信息" />
 
     <Button
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="17dp"
+        android:layout_alignLeft="@+id/textView5"
+        android:layout_alignStart="@+id/textView5"
+        android:layout_below="@+id/textView5"
+        android:layout_marginTop="13dp"
         android:text="start" />
 
     <EditText
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/et_hello"
+        android:layout_alignEnd="@+id/textView"
         android:layout_alignLeft="@+id/et_hello"
-        android:layout_alignRight="@+id/et_hello"
+        android:layout_alignRight="@+id/textView"
         android:layout_alignStart="@+id/et_hello"
         android:layout_below="@+id/et_hello"
-        android:layout_marginTop="22dp"
-        android:inputType="number"
-        android:hint="设置添加时间间隔，默认为10（单位为s）" />
+        android:hint="设置添加时间间隔，默认为10（单位为s）"
+        android:inputType="number" />
 
     <TextView
         android:id="@+id/textView5"
@@ -93,17 +91,18 @@
         android:layout_alignLeft="@+id/bundle"
         android:layout_alignStart="@+id/bundle"
         android:layout_below="@+id/bundle"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="17dp"
         android:text="已经添加的人数: " />
 
     <TextView
         android:id="@+id/sum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView5"
-        android:layout_alignBottom="@+id/textView5"
-        android:layout_alignLeft="@+id/start"
-        android:layout_alignStart="@+id/start"
+        android:layout_above="@+id/start"
+        android:layout_marginLeft="29dp"
+        android:layout_marginStart="29dp"
+        android:layout_toEndOf="@+id/textView5"
+        android:layout_toRightOf="@+id/textView5"
         android:text="0" />
 
     <EditText
@@ -119,6 +118,18 @@
         android:ems="10"
         android:hint="请选择需要的bundle场景（可为1、2、3）"
         android:inputType="number" />
+
+    <Button
+        android:id="@+id/wxid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/start"
+        android:layout_alignBottom="@+id/start"
+        android:layout_alignEnd="@+id/bundle"
+        android:layout_alignRight="@+id/bundle"
+        android:layout_marginEnd="28dp"
+        android:layout_marginRight="28dp"
+        android:text="wxid" />
 
 
 </RelativeLayout>

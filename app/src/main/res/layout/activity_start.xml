@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.admin.wxaddfrienddemo.StartActivity">
+
+    <Button
+        android:id="@+id/slow"
+        android:text="间接"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="33dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginTop="65dp" />
+
+    <Button
+        android:id="@+id/quick"
+        android:text="直接"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/slow"
+        android:layout_alignBottom="@+id/slow"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="73dp"
+        android:layout_marginRight="73dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/slow"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/slow"
+        android:layout_marginTop="19dp"
+        android:text="开启辅助功能后，选择你想要的模式，直接或间接" />
+
+</RelativeLayout>

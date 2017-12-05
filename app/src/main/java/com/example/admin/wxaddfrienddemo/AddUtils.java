@@ -1,7 +1,10 @@
 package com.example.admin.wxaddfrienddemo;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -228,6 +231,28 @@ public class AddUtils {
             }
         }
 
+    }
+
+
+
+
+    public static void addFriendByWxid(Context context,String wxid,int scene){
+
+        Log.i("xyz","进入addFriendByWxid   context = "+context +" wxid "+wxid+" scene "+scene);
+
+        Intent params = new Intent();
+        params.setClassName(context, "com.tencent.mm.plugin.profile.ui.SayHiWithSnsPermissionUI");
+        params.putExtra("sayhi_with_sns_perm_send_verify", true);
+        params.putExtra("room_name", "null");
+        params.putExtra("source_from_user_name", "null");
+        params.putExtra("sayhi_with_sns_perm_add_remark", true);
+        params.putExtra("source_from_nick_name", "null");
+        params.putExtra("Contact_Nick", "");
+        params.putExtra("Contact_User", wxid);
+        params.putExtra("Contact_Scene", scene);
+        params.putExtra("Contact_RemarkName", "");
+        params.putExtra("sayhi_with_sns_perm_set_label", false);
+        context.startActivity(params);
     }
 
 
