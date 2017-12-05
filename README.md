@@ -102,4 +102,7 @@ I/set     ( 2625): bundle = Bundle[{Contact_NeedShowChangeRemarkButton=false, Co
 
 每次操作间的时间间隔也来了个随机生成的，在1500到2000毫秒之间。
 
+5.0 
+
+新增直接跳转到验证界面填入验证信息加人，而不是到用户界面再点击添加的方式。这种需要注意的就是通过intent的方式来跳转的，不是之前的adb的方式。所以需要用到微信的context，需要hook来拿到，然后又是进程间通信的问题。这里不能用之前的SharedPrefrences结合ContentProvider的方式来通信，因为如果是这种方式的话，会在hook中做跳转界面的操作。但是hook又是一个不断的过程，所以会卡顿到微信的打开。换一个思路，采用BroadcastReceiver的方式，通过在activity发送广播，在xposed中注册广播，然后将获取到的微信Context传给广播接收者，在onReceiver（） 中去执行界面的跳转操作。
 
