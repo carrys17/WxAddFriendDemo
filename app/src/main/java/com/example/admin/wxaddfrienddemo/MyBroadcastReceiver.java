@@ -24,7 +24,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
         String wxid = bundle.getString("wxid");
         int scene = bundle.getInt("scene");
-        AddUtils.addFriendByWxid(mContext,wxid,scene);
+        String tuiWxid = bundle.getString("tuiWxid");
+        String tuiNickName = bundle.getString("tuiNickName");
+        AddUtils.addFriendByWxid(mContext,wxid,scene,tuiWxid,tuiNickName);
 
     }
 

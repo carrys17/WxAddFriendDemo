@@ -236,7 +236,7 @@ public class AddUtils {
 
 
 
-    public static void addFriendByWxid(Context context,String wxid,int scene){
+    public static void addFriendByWxid(Context context,String wxid,int scene,String tuiWxid,String tuiNickName){
 
         Log.i("xyz","进入addFriendByWxid   context = "+context +" wxid "+wxid+" scene "+scene);
 
@@ -244,9 +244,9 @@ public class AddUtils {
         params.setClassName(context, "com.tencent.mm.plugin.profile.ui.SayHiWithSnsPermissionUI");
         params.putExtra("sayhi_with_sns_perm_send_verify", true);
         params.putExtra("room_name", "null");
-        params.putExtra("source_from_user_name", "null");
-        params.putExtra("sayhi_with_sns_perm_add_remark", true);
-        params.putExtra("source_from_nick_name", "null");
+        params.putExtra("source_from_user_name", tuiWxid);
+                params.putExtra("sayhi_with_sns_perm_add_remark", true);
+        params.putExtra("source_from_nick_name", tuiNickName);
         params.putExtra("Contact_Nick", "");
         params.putExtra("Contact_User", wxid);
         params.putExtra("Contact_Scene", scene);
